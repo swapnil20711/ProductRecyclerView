@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LiveCoding</string>
+    <string name="app_name">ProductCommerce</string>
     <string name="title_activity_catalog">CatalogActivity</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
