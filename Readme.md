@@ -12,4 +12,4 @@ This app cleared my concepts of inflating multiple recycler views in a layout an
 ![](https://github.com/Swapnil7000/ProductRecyclerView/blob/main/Screenshots/sorted_list.jpeg)
 ## Download the apk
 
-[Apk download](https://github.com/Swapnil7000/ProductRecyclerView/releases/download/admin_v0.41/admin_ecom.apk "Apk of admin ecom")
+[Apk download](https://github.com/Swapnil7000/ProductRecyclerView/releases/download/admin_v0.41/app-debug.apk "Apk of admin ecom")
