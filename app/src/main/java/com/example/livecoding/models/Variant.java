@@ -7,10 +7,7 @@ public class Variant {
 
     @Override
     public String toString() {
-        return "Variant{" +
-                "name='" + name + '\'' +
-                ", price=" + price +
-                '}';
+        return  name +"-Rs "+ price;
     }
 
     public Variant(String name, int price) {

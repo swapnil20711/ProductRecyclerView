@@ -2,14 +2,14 @@ package com.example.livecoding.models;
 
 import android.util.Log;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Product {
+public class Product implements Serializable {
 
     //To check the type of product 
     public static final byte WEIGHT_BASED = 0;
     public static final byte VARIANT_BASED = 1;
-    public String pName;
     //Weight based product vars
     public int price;
     public String name;
@@ -50,7 +50,7 @@ public class Product {
         for (String s : vs) {
             String[] v = s.split(",");
             variants.add(new Variant(v[0], Integer.parseInt(v[1])));
-            Log.e("main",variants.toString());
+            Log.e("main", variants.toString());
         }
     }
 
@@ -60,5 +60,17 @@ public class Product {
                 .replaceFirst("\\[", "")
                 .replaceFirst("]", "")
                 .replaceAll(",", "\n");
+    }
+
+    public String minQtyToString() {
+        //float (2.0) -> String (2kg)
+        //float (0.050) -> String (50g)
+
+        if (minQty < 1) {
+            int g = (int) (minQty * 1000);
+            return g + "g";
+        }
+
+        return ((int) minQty) + "kg";
     }
 }

@@ -48,6 +48,12 @@
                 android:text="Variants based" />
         </RadioGroup>
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lv_variant"
+        android:visibility="gone"
+        android:orientation="vertical">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/variants_based"
@@ -55,8 +61,7 @@
         android:layout_width="match_parent"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
-        android:layout_height="wrap_content"
-        android:visibility="gone">
+        android:layout_height="wrap_content">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
@@ -66,8 +71,11 @@
 
 
     </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
 
     <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/lh_edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -78,8 +86,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="8dp"
-            android:visibility="gone">
+            android:padding="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/product_min_qty"
@@ -96,8 +103,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="8dp"
-            android:visibility="gone">
+            android:padding="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/price_per_kg"

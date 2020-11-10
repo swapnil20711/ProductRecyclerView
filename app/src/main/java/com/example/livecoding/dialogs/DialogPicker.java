@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RadioGroup;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.livecoding.R;
@@ -16,6 +17,7 @@ import com.example.livecoding.models.Product;
 public class DialogPicker {
     private Product product;
     private DialogProductListBinding b;
+
 
     public void showP(Context context,
                       final Product product, final onProductEditedListener listener) {
@@ -33,8 +35,8 @@ public class DialogPicker {
                 .setPositiveButton("Select", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        product.name = b.productName.getText().toString().trim();
                         if (areProductsDetailsValid()) {
+                            product.name = b.productName.getText().toString().trim();
                             listener.onProductEdited(DialogPicker.this.product);
                         } else {
                             Toast.makeText(context, "Invalid details!!", Toast.LENGTH_SHORT).show();
@@ -45,6 +47,7 @@ public class DialogPicker {
                 .show();
 
         setUpRadio();
+        prefilldetails();
     }
 
     //Set Up radio buttons
@@ -53,16 +56,29 @@ public class DialogPicker {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.weight_based_radiobtn) {
-                    b.productQtyRoot.setVisibility(View.VISIBLE);
-                    b.productPriceperkgRoot.setVisibility(View.VISIBLE);
-                    b.variantsBased.setVisibility(View.GONE);
+                    b.lvVariant.setVisibility(View.GONE);
+                    b.lhEdittext.setVisibility(View.VISIBLE);
                 } else {
-                    b.variantsBased.setVisibility(View.VISIBLE);
-                    b.productPriceperkgRoot.setVisibility(View.GONE);
-                    b.productQtyRoot.setVisibility(View.GONE);
+                    b.lhEdittext.setVisibility(View.GONE);
+                    b.lvVariant.setVisibility(View.VISIBLE);
                 }
             }
         });
+    }
+
+    private void prefilldetails() {
+        b.productName.setText(product.name);
+
+        b.radioGroup.check(product.type == product.WEIGHT_BASED ? R.id.weight_based_radiobtn : R.id.variants_based_radiobtn);
+
+        if (product.type == Product.WEIGHT_BASED) {
+            b.productName.setText(product.name);
+            b.productMinQty.setText(product.minQtyToString());
+            b.pricePerKg.setText(product.price + "");
+        } else {
+            b.variantProduct.setText(product.variantsString() + "");
+        }
+
     }
 
     //Check whether product details are valid or not
@@ -71,8 +87,6 @@ public class DialogPicker {
         if (pName.isEmpty()) {
             return false;
         }
-        this.product.name = pName;
-
         switch (b.radioGroup.getCheckedRadioButtonId()) {
             case R.id.weight_based_radiobtn:
                 String price = b.pricePerKg.getText().toString().trim();
@@ -83,25 +97,25 @@ public class DialogPicker {
                 product = new Product(pName, Integer.parseInt(price), extractQty(minQty));
                 return true;
             case R.id.variants_based_radiobtn:
-                Log.e("main","fucked up");
+                Log.e("main", "fucked up");
                 String variants = b.variantProduct.getText().toString().trim();
 
                 product = new Product(pName);
 
-                areVariantsValid(variants);
+                return areVariantsValid(variants);
         }
         return false;
     }
 
     private boolean areVariantsValid(String variants) {
         if (variants.length() == 0) {
-            return true;
+            return false;
         }
         String[] vs = variants.split("\n");
 
         for (String s : vs) {
             if (!(s.matches("^\\w+(\\s|\\w)+,\\d+$"))) {
-                Log.e("main","fucked");
+                Log.e("main", "fucked");
                 return false;
             }
         }
@@ -113,15 +127,16 @@ public class DialogPicker {
     //To extract qty from string
     private float extractQty(String minQty) {
         if (minQty.contains("kg")) {
-            return Float.parseFloat(minQty.replace("kg", ""));
+            return Integer.parseInt(minQty.replace("kg", ""));
         } else {
-            return Float.parseFloat(minQty.replace("g", "")) / 1000f;
+            return Integer.parseInt(minQty.replace("g", "")) / 1000f;
         }
     }
 
     //Listener to call when product is edited
     public interface onProductEditedListener {
         void onProductEdited(Product product);
+
         void onCancelled();
     }
 
