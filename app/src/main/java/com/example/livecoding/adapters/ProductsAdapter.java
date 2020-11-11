@@ -29,7 +29,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public int LastItemSelectedPosition;
 
 
-    public ProductsAdapter(Context context, List<Product> productList) {
+    public ProductsAdapter(Context context, ArrayList<Product> productList) {
         this.context = context;
         allProducts = productList;
         this.visibleProducts = new ArrayList<>(productList);
@@ -87,12 +87,13 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 if (!(context instanceof CatalogActivity)) {
                     return;
                 }
-
-                ((CatalogActivity) context).getMenuInflater().inflate(R.menu.contextual_menu, menu);
+                CatalogActivity activity=(CatalogActivity)context;
+                if (!activity.isDragModeOn) {
+                    activity.getMenuInflater().inflate(R.menu.contextual_menu, menu);
+                }
             }
         });
     }
-
 
     @Override
     public int getItemCount() {
@@ -135,5 +136,4 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
         notifyDataSetChanged();
     }
-
 }

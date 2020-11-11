@@ -12,6 +12,11 @@
         android:icon="@drawable/ic_sort"
         android:title="Sort"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/drag_mode"
+        android:icon="@drawable/ic_drag_and_drop"
+        android:title="Reshuffler"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/add_item"
