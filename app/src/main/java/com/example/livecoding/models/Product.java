@@ -16,8 +16,8 @@ public class Product implements Serializable {
     public int qty;
     public float minQty;
     //Type to store WEIGHT_BASED & PRODUCT_BASED
-    public byte type;
-    private ArrayList<Variant> variants;
+    public int type;
+    public ArrayList<Variant> variants;
 
 
     public Product(String name, int price, float minQty) {

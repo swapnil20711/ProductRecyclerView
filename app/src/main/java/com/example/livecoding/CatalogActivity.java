@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,7 +25,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.livecoding.adapters.ProductsAdapter;
 import com.example.livecoding.databinding.ActivityCatalogBinding;
 import com.example.livecoding.dialogs.DialogPicker;
+import com.example.livecoding.models.Inventory;
 import com.example.livecoding.models.Product;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -40,6 +46,27 @@ public class CatalogActivity extends AppCompatActivity {
     private SearchView searchView;
     private ItemTouchHelper itemTouchHelper;
     public boolean isDragModeOn;
+    private MyApp app;
+    private ArrayList<Product> restoreRemoveProducts=new ArrayList<>();
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setTitle("Unsaved changes")
+                .setMessage("Do you want to save?")
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        saveData();
+                    }
+                }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                
+                finish();
+            }
+        }).show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +74,39 @@ public class CatalogActivity extends AppCompatActivity {
         setContentView(R.layout.activity_catalog);
         b = ActivityCatalogBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
+
+        app = (MyApp) getApplicationContext();
         loadPreviousData();
-        setUpProductList();
     }
 
     private void saveData() {
+        if (app.isOffline()) {
+            Toast.makeText(this, "Cannot fetch data You are offline!!", Toast.LENGTH_SHORT).show();
+        }
+        app.showLoadingDialog(CatalogActivity.this);
+        Inventory inventory = new Inventory(products);
+        app.db.collection("inventory")
+                .document("products")
+                .set(inventory)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        app.showToast(CatalogActivity.this, "Data saved at db!!");
+                        app.hideLoadingDialog();
+                        saveDataLocally();
+                        finish();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        app.showToast(CatalogActivity.this, "Failed to save data");
+                        app.hideLoadingDialog();
+                    }
+                });
+    }
+
+    private void saveDataLocally() {
         SharedPreferences preferences = getSharedPreferences("products_data", MODE_PRIVATE);
         preferences.edit().putString("data", new Gson().toJson(products)).apply();
     }
@@ -59,18 +114,52 @@ public class CatalogActivity extends AppCompatActivity {
     private void loadPreviousData() {
         SharedPreferences preferences = getSharedPreferences("products_data", MODE_PRIVATE);
         String jsonData = preferences.getString("data", null);
+//        Log.e("main",""+jsonData.isEmpty());
+//        Toast.makeText(this, ""+jsonData.isEmpty(), Toast.LENGTH_SHORT).show();
         if (jsonData != null) {
             products = new Gson().fromJson(jsonData, new TypeToken<List<Product>>() {
             }.getType());
+            setUpProductList();
         } else {
-            products = new ArrayList<>();
+            fetchFromCloud();
         }
+    }
+
+    private void fetchFromCloud() {
+        if (app.isOffline()) {
+            Toast.makeText(this, "Cannot fetch data You are offline!!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        app.showLoadingDialog(this);
+        app.db.collection("inventory")
+                .document("products")
+                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot snapshot) {
+                if (snapshot.exists() && snapshot != null) {
+                    Inventory inventory = snapshot.toObject(Inventory.class);
+                    products = inventory.products;
+                } else {
+                    products = new ArrayList<>();
+                }
+                saveDataLocally();
+                setUpProductList();
+                app.hideLoadingDialog();
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        app.showToast(CatalogActivity.this, "Failed to save data");
+                        app.hideLoadingDialog();
+                    }
+                });
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        saveData();
+        saveDataLocally();
     }
 
     private void setUpDragDrop() {
@@ -230,6 +319,7 @@ public class CatalogActivity extends AppCompatActivity {
         new DialogPicker().showP(this, new Product(), new DialogPicker.onProductEditedListener() {
             @Override
             public void onProductEdited(Product product) {
+
                 adapter.allProducts.add(product);
                 if (isNameInQuery(product.name)) {
                     adapter.visibleProducts.add(product);

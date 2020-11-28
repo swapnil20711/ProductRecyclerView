@@ -14,5 +14,8 @@ public class Variant {
         this.name = name;
         this.price = price;
     }
+    public Variant(){
+
+    }
 
 }

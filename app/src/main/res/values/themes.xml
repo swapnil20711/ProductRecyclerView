@@ -22,4 +22,13 @@
     <style name="Theme.LiveCoding.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.LiveCoding.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="LoaderStyle" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="android:windowMinWidthMajor">50%</item>
+        <item name="android:windowMinWidthMinor">50%</item>
+    </style>
+
+    <style name="SplashScreenTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+    </style>
 </resources>

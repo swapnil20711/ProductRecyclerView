@@ -1,6 +1,7 @@
 package com.example.livecoding.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -128,6 +129,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void filterQuery(String query) {
         query = query.toLowerCase();
         visibleProducts = new ArrayList<>();
+        Log.e("main",""+visibleProducts.toString());
         for (Product product : allProducts) {
             if (product.name.toLowerCase().contains(query)) {
                 visibleProducts.add(product);
