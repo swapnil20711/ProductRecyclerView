@@ -52,4 +52,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics'
 
     implementation 'com.airbnb.android:lottie:3.5.0'
+    implementation 'com.google.firebase:firebase-messaging'
 }
