@@ -23,8 +23,8 @@ public class MyFCMService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
 
         createNotificationChannel();
-        String title=remoteMessage.getData().get("title");
-        String body=remoteMessage.getData().get("body");
+        String title=remoteMessage.getData().get("title").toString();
+        String body=remoteMessage.getData().get("body").toString();
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(body)
