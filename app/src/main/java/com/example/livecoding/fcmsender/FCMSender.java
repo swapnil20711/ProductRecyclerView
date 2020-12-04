@@ -11,7 +11,6 @@ import okhttp3.RequestBody;
 
 public class FCMSender {
     private static final String FCM_URL = "https://fcm.googleapis.com/fcm/send", KEY_STRING = String.valueOf(R.string.key);
-
     OkHttpClient client = new OkHttpClient();
 
     public void send(String message, Callback callback) {

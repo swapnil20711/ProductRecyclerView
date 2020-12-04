@@ -2,6 +2,7 @@ package com.example.livecoding.services;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -22,14 +23,16 @@ public class MyFCMService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
 
         createNotificationChannel();
+        String title=remoteMessage.getData().get("title");
+        String body=remoteMessage.getData().get("body");
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle(remoteMessage.getNotification().getTitle())
-                .setContentText(remoteMessage.getNotification().getBody())
-                .setChannelId(CHANNEL_ID)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setSmallIcon(R.drawable.common_google_signin_btn_icon_dark_normal)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(new Random().nextInt(1000) + 1000, builder.build());
+        notificationManager.notify(new Random().nextInt(200000) + 2000, builder.build());
     }
 
 

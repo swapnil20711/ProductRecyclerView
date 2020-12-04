@@ -44,8 +44,9 @@ public class OrdersActivity extends AppCompatActivity {
         });
     }
 
+
     private void setAdapter() {
-        OrdersAdapter adapter=new OrdersAdapter(this, docs);
+        OrdersAdapter adapter=new OrdersAdapter(this, docs,app);
         b.recyclerView.setAdapter(adapter);
         b.recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

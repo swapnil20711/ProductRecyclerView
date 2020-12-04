@@ -28,6 +28,8 @@ import com.example.livecoding.adapters.OrdersAdapter;
 import com.example.livecoding.adapters.ProductsAdapter;
 import com.example.livecoding.databinding.ActivityCatalogBinding;
 import com.example.livecoding.dialogs.DialogPicker;
+import com.example.livecoding.fcmsender.FCMSender;
+import com.example.livecoding.fcmsender.MessageFormatter;
 import com.example.livecoding.models.Inventory;
 import com.example.livecoding.models.Product;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -41,10 +43,17 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class CatalogActivity extends AppCompatActivity {
     ActivityCatalogBinding b;
@@ -84,7 +93,6 @@ public class CatalogActivity extends AppCompatActivity {
 
         app = (MyApp) getApplicationContext();
         loadPreviousData();
-
         FirebaseMessaging.getInstance().subscribeToTopic("admin");
 
         b.seeOrders.setOnClickListener(new View.OnClickListener() {
@@ -92,6 +100,33 @@ public class CatalogActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent=new Intent(CatalogActivity.this,OrdersActivity.class);
                 startActivity(intent);
+            }
+        });
+    }
+
+    private void sendNotification() {
+        String message = MessageFormatter
+                .getSampleMessage("admin", "Order details", "Order placed ");
+
+        new FCMSender().send(message, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new androidx.appcompat.app.AlertDialog.Builder(CatalogActivity.this).setTitle("Failure").setMessage(e.toString()).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new androidx.appcompat.app.AlertDialog.Builder(CatalogActivity.this).setTitle("Success").setMessage(response.toString()).show();
+                    }
+                });
             }
         });
     }
